@@ -10,50 +10,10 @@ class SituacaoAcademicaPage extends StatelessWidget {
         backgroundColor: const Color(0xFF004CBD),
         title: const Text('Situação Acadêmica'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Status da Sua Situação Acadêmica',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            // Exibição de status
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListTile(
-                title: const Text('Documentos'),
-                subtitle: const Text('Status: Completo'),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListTile(
-                title: const Text('Pendências'),
-                subtitle: const Text('Status: Nenhuma'),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListTile(
-                title: const Text('Matrícula'),
-                subtitle: const Text('Status: Ativa'),
-              ),
-            ),
-          ],
+      body: const Center(
+        child: Text(
+          'Aqui estarão as informações da Situação Acadêmica',
+          style: TextStyle(fontSize: 24),
         ),
       ),
     );

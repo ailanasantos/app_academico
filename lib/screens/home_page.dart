@@ -1,23 +1,12 @@
-import 'package:app_academico/models/app_item.dart';
+import 'package:app_academico/screens/analise_curricular.dart';
+import 'package:app_academico/screens/grade_curricular.dart';
+import 'package:app_academico/screens/situacao_academica.dart';
 import 'package:flutter/material.dart';
-import 'detalhes_app_page.dart';  // Certifique-se de importar a tela de detalhes
-import '../services/api_service.dart';  // Importando o serviço API
+import 'boletim_page.dart';  // Importando a tela de Boletim
+import 'rematricula_page.dart'; // Tela de Rematrícula
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  late Future<List<dynamic>> apps;
-
-  @override
-  void initState() {
-    super.initState();
-    apps = ApiService().fetchAppItems();  // Consumindo a API para obter a lista de aplicativos
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,115 +23,141 @@ class _HomePageState extends State<HomePage> {
             const Text('Portal do Aluno'),
           ],
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(Icons.person, color: Color(0xFF004CBD)),
-            ),
-          ),
-        ],
       ),
-      body: FutureBuilder<List<dynamic>>(
-        future: apps,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Erro: ${snapshot.error}'));
-          }
-
-          final apps = snapshot.data;
-
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 12),
+              const Text(
+                'Aplicativos',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
                 children: [
-                  const Text(
-                    'Aplicativos',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  // Boletim
+                  _buildCard(
+                    context,
+                    title: 'Boletim (Semestre Atual)',
+                    description: 'Desempenho nas disciplinas do semestre atual.',
+                    onTap: () {
+                      // Navegar para a tela de boletim
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BoletimPage()),
+                      );
+                    },
                   ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    children: apps!
-                        .map(
-                          (app) => SizedBox(
-                            width: double.infinity,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                                border: Border(
-                                  left: BorderSide(
-                                    color: const Color(0xFF004CBD),
-                                    width: 5,
-                                  ),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      app['titulo'],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(app['descricao']),
-                                    const SizedBox(height: 12),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: TextButton(
-                                        onPressed: () {
-                                          // Aqui estamos navegando para a página de detalhes
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => DetalhesAppPage(
-                                                app: AppItem(
-                                                  titulo: app['titulo'],
-                                                  descricao: app['descricao'],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: const Text('Acessar'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
+                  // Análise Curricular
+                  _buildCard(
+                    context,
+                    title: 'Análise Curricular',
+                    description: 'Análise curricular completa.',
+                    onTap: () {
+                      // Navegar para a tela de Análise Curricular
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AnaliseCurricularPage()),
+                      );
+                    },
+                  ),
+                  // Situação Acadêmica
+                  _buildCard(
+                    context,
+                    title: 'Situação Acadêmica',
+                    description: 'Situação acadêmica atual, incluindo pendências.',
+                    onTap: () {
+                      // Navegar para a tela de Situação Acadêmica
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SituacaoAcademicaPage()),
+                      );
+                    },
+                  ),
+                  // Rematrícula
+                  _buildCard(
+                    context,
+                    title: 'Rematrícula Online',
+                    description: 'Realize sua rematrícula online de forma rápida.',
+                    onTap: () {
+                      // Navegar para a tela de Rematrícula
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RematriculaPage()),
+                      );
+                    },
+                  ),
+                  // Grade Curricular
+                  _buildCard(
+                    context,
+                    title: 'Grade Curricular',
+                    description: 'Consulte a grade curricular do seu curso.',
+                    onTap: () {
+                      // Navegar para a tela de Grade Curricular
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const GradeCurricularPage()),
+                      );
+                    },
                   ),
                 ],
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Função para construir os cards
+  Widget _buildCard(BuildContext context, {required String title, required String description, required VoidCallback onTap}) {
+    return SizedBox(
+      width: double.infinity,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-          );
-        },
+          ],
+          border: Border(
+            left: BorderSide(
+              color: const Color(0xFF004CBD),
+              width: 5,
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 4),
+              Text(description),
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  onPressed: onTap,
+                  child: const Text('Acessar'),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

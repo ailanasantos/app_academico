@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';  // Importando o AuthService
-import 'home_page.dart';  // Importando a HomePage
+import 'home_page.dart'; // Importando a HomePage
+import 'package:shared_preferences/shared_preferences.dart';  // Para armazenar o token
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,7 +12,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
-  final authService = AuthService();
 
   @override
   void dispose() {
@@ -21,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // Função de login
+  // Função de login local
   Future<void> realizarLogin() async {
     final username = emailController.text;
     final password = senhaController.text;
@@ -44,16 +43,19 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // Tentando fazer login
-    final token = await authService.login(username, password);
+    // Validação de senha fixa (exemplo: senha é '123456')
+    if (password == '123456') {
+      // Se o login for bem-sucedido, armazene o token e navegue para a HomePage
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', 'exemplo-de-token'); // Armazenando um token fictício
 
-    if (token != null) {
-      // Se o login for bem-sucedido, navegue para a HomePage
-      print("Login bem-sucedido! Token: $token");
-      // Você pode armazenar o token em um local seguro, como SharedPreferences ou Keychain
+      // Exibir mensagem de sucesso
+      print("Login bem-sucedido!");
+
+      // Navegar para a HomePage
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomePage()), // Altere para a sua HomePage
+        MaterialPageRoute(builder: (_) => const HomePage()),
       );
     } else {
       // Se o login falhar, exibe uma mensagem de erro

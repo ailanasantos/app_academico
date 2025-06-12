@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
+import '../services/analise_curricular_service.dart';  // Certifique-se de importar o serviço de Análise Curricular
 
-class AnaliseCurricularPage extends StatelessWidget {
+class AnaliseCurricularPage extends StatefulWidget {
   const AnaliseCurricularPage({super.key});
+
+  @override
+  State<AnaliseCurricularPage> createState() => _AnaliseCurricularPageState();
+}
+
+class _AnaliseCurricularPageState extends State<AnaliseCurricularPage> {
+  late Future<List<dynamic>> analiseCurricular;
+
+  @override
+  void initState() {
+    super.initState();
+    analiseCurricular = AnaliseCurricularService().fetchAnaliseCurricular();  // Consumindo a API para obter a análise curricular
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,48 +24,33 @@ class AnaliseCurricularPage extends StatelessWidget {
         backgroundColor: const Color(0xFF004CBD),
         title: const Text('Análise Curricular'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Progresso do Curso',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            // Barra de progresso do curso
-            const LinearProgressIndicator(
-              value: 0.75, // Exemplo de progresso (75%)
-              backgroundColor: Colors.grey,
-              color: Color(0xFF004CBD),
-              minHeight: 10,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Disciplinas Concluídas e Pendentes',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            // Lista de disciplinas
-            ListView.builder(
-              itemCount: 5,  // Exemplo, substitua pelo número real de disciplinas
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+      body: FutureBuilder<List<dynamic>>(
+        future: analiseCurricular,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Erro: ${snapshot.error}'));
+          }
+
+          final analises = snapshot.data;
+
+          return ListView.builder(
+            itemCount: analises?.length ?? 0,
+            itemBuilder: (context, index) {
+              return Card(
+                margin: const EdgeInsets.all(8),
+                child: ListTile(
+                  title: Text('Aluno: ${analises![index]['aluno']}'),
+                  subtitle: Text(
+                    'Curso: ${analises[index]['curso']} | Progresso: ${analises[index]['progresso']}%',
                   ),
-                  child: ListTile(
-                    title: const Text('Disciplina X'),
-                    subtitle: const Text('Status: Concluída'),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
